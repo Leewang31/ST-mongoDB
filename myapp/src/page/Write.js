@@ -2,7 +2,7 @@ import styled from "styled-components";
 const Write = () => {
   return (
     <WriteWrapper>
-      <form action="/add" method="POST">
+      <form action="http://localhost:8080/add" method="POST">
         <h2 className="writeH2">할일</h2>
         <input type="text" name="title" />
         <h2 className="writeH2">Due Date</h2>

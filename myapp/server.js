@@ -6,6 +6,20 @@ const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname + "/build")));
 
+// Enable CORS
+app.use(function (req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header(
+    "Access-Control-Allow-Methods",
+    "GET,HEAD,OPTIONS,POST,PUT,DELETE"
+  );
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept, Authorization"
+  );
+  next();
+});
+
 const MongoClient = require("mongodb").MongoClient;
 
 let db;
@@ -29,15 +43,38 @@ app.get("/data", (req, res) => {
     .find()
     .toArray((error, result) => {
       if (error) return console.log("error");
-      console.log(result);
+      res.send(result);
     });
 });
 app.post("/add", (req, res) => {
+  let postCount;
   res.send("전송완료");
-  db.collection("post").insertOne(
-    { 제목: req.body.title, 날짜: req.body.date },
+  db.collection("counter").findOne({ name: "postCount" }, (error, result) => {
+    postCount = result.totalPost;
+    db.collection("post").insertOne(
+      { _id: postCount + 1, 제목: req.body.title, 날짜: req.body.date },
+      (error, result) => {
+        console.log("저장완료");
+
+        //데이터 수정
+        db.collection("counter").updateOne(
+          { name: "postCount" },
+          //몽고 db operator $set:값을 완전 변경 $inc:값을 더 함
+          {
+            $inc: {
+              totalPost: 1,
+            },
+          }
+        );
+      }
+    );
+  });
+});
+app.delete("/delete/:id", (req, res) => {
+  db.collection("post").deleteOne(
+    { _id: parseInt(req.params.id) },
     (error, result) => {
-      console.log("저장완료");
+      console.log("삭제완료");
     }
   );
 });
