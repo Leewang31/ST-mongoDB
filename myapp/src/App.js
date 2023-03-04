@@ -2,6 +2,9 @@ import styled from "styled-components";
 import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
 import Home from "./page/Home";
 import Write from "./page/Write";
+import Detail from "./page/Detail";
+import Edit from "./page/Eidt";
+import Login from "./page/Login";
 
 function App() {
   return (
@@ -15,12 +18,17 @@ function App() {
           <Link to="/write">
             <button className="topNavButton">Write</button>
           </Link>
-          <button className="topNavButton">임시</button>
+          <Link to="/login">
+            <button className="topNavButton">Login</button>
+          </Link>
         </TopNav>
         <MainWrapper>
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/write" element={<Write />} />
+            <Route path="/detail/:id" element={<Detail />} />
+            <Route path="/edit/:id" element={<Edit />} />
+            <Route path="/login" element={<Login />} />
           </Routes>
         </MainWrapper>
       </div>
